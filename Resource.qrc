@@ -1,0 +1,12 @@
+<RCC>
+    <qresource prefix="/">
+        <file>qml/main.qml</file>
+        <file>html/active-line.js</file>
+        <file>html/blackboard.css</file>
+        <file>html/codemirror.css</file>
+        <file>html/codemirror.js</file>
+        <file>html/editor_webbase.html</file>
+        <file>html/javascript.js</file>
+        <file>html/matchbrackets.js</file>
+    </qresource>
+</RCC>

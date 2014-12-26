@@ -1,0 +1,100 @@
+<!doctype html>
+<meta charset="utf-8"/>
+<link rel="stylesheet" href="codemirror.css">
+<link rel="stylesheet" href="blackboard.css">
+<script src="codemirror.js"></script>
+<script src="javascript.js"></script>
+<script src="active-line.js"></script>
+<script src="matchbrackets.js"></script>
+<style type="text/css">
+    .CodeMirror {border: 1px solid black; height: 100%; font-size:13px}
+    .styled-background { background-color: #8f0f0f; }
+    body, html { overflow: hidden; margin: 0; padding: 0; height: 100%; }
+</style>
+<textarea id="code" name="code">
+var fruits = ["Banana", "Orange", "Apple", "Mango"];
+document.getElementById("demo").innerHTML = fruits;
+function myFunction() {
+    fruits.pop()
+    document.getElementById("demo").innerHTML = fruits;
+}
+</textarea>
+<script>
+// Date: 2014
+// Author: Ali Mashatan
+// Email : ali.mashatan@gmail.com
+
+  var listAnnotation = [];
+
+  function sendMessage(type, obj) {
+    var data={"type": type,
+            "data": obj}
+    navigator.qt.postMessage(JSON.stringify(data));
+    return data.joined;
+  }
+
+  var node = null;
+  var widget = null;
+
+  var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
+    lineNumbers: true,
+    styleActiveLine: true,
+    matchBrackets: true
+  });
+  editor.setOption("theme", "blackboard");
+
+  navigator.qt.onmessage = function(message) {
+
+      obj = JSON.parse(message.data);
+      switch (obj.type)
+      {
+        case 200:
+        listAnnotation = [];
+        for (var i = 0; i < obj.data.length; i++) {
+            var item = obj.data[i];
+            listAnnotation.push(item);
+            var posFrom = {line: 0, ch: 0};
+            var posTo   = {line: 0, ch: 0};
+            posFrom.line = item.line;
+            posFrom.ch = item.start;
+            posTo.line = item.line;
+            posTo.ch = item.end;
+            editor.markText(posFrom, posTo, {className: "styled-background"});
+        }
+        break;
+      }
+  }
+
+  editor.on("change", function(CodeMirror, object) {
+    sendMessage( 100, CodeMirror.getValue("\n") );
+  });
+
+  editor.on("cursorActivity", function(CodeMirror) {
+        if (widget)
+        {
+              CodeMirror.removeLineWidget(widget);
+        }
+        var pos = editor.getCursor();
+        var flag = false;
+        var textHint = null;
+        for (var i =0; i< listAnnotation.length; i++)
+        {
+              if (pos.line == listAnnotation[i].line &&
+                  (pos.ch > listAnnotation[i].start && pos.ch < listAnnotation[i].end))
+              {
+                      textHint = listAnnotation[i].text;
+                      flag = true
+              }
+        }
+        if (flag)
+        {
+              node = document.createElement("div");
+              node.style.backgroundColor = 'red'
+              node.style.overflow = "hidden";
+              node.innerHTML = textHint;
+              widget = CodeMirror.addLineWidget(pos.line, node);
+        }
+
+  });
+
+</script>
