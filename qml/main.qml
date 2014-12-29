@@ -8,22 +8,16 @@ import QtWebKit 3.0
 import QtWebKit.experimental 1.0
 import ETCodeEditorExtension 1.0
 
-ScrollView {
+Rectangle {
     width: 1280
     height: 720
     WebView {
+        focus: true
         experimental.preferences.navigatorQtObjectEnabled: true
-        experimental.onMessageReceived: {
-          onEventHandler(message.data)
-        }
         signal onEventHandler(string message)
         id: editorBrowser
         url: "qrc:///html/editor_webbase.html"
         anchors.fill: parent
-
-        function updateAnnotation(message) {
-            editorBrowser.experimental.postMessage(message)
-        }
     }
     ETCodeEditorExtension {
         codeEditor: editorBrowser

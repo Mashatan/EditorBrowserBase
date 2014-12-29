@@ -18,8 +18,6 @@ int main(int argc, char ** argv)
     QQuickView view;
 
     qmlRegisterType<ETCodeEditorExtension>("ETCodeEditorExtension", 1, 0, "ETCodeEditorExtension");
-
-
     view.setSource(QUrl("qrc:///qml/main.qml"));
     view.show();
 

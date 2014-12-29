@@ -4,7 +4,8 @@
 
 #include <ETCodeEditorExtension.h>
 #include <iostream>
-
+#include <private/qquickwebview_p.h>
+#include <private/qquickwebpage_p.h>
 
 ETCodeEditorExtension::ETCodeEditorExtension()
 {
@@ -22,7 +23,9 @@ ETCodeEditorExtension::~ETCodeEditorExtension()
 void ETCodeEditorExtension::setCodeEditor(QQuickItem *ptrCodeEditor)
 {
     m_ptrCodeEditor = ptrCodeEditor;
-    m_ptrCodeEditorHandler = new ETCodeEditorHandler(m_ptrCodeEditor);
+    QQuickWebView * webView = dynamic_cast<QQuickWebView*>(ptrCodeEditor);
+    webView->experimental()->setFlickableViewportEnabled(false);
+    m_ptrCodeEditorHandler = new ETCodeEditorHandler(webView);
 }
 
 QQuickItem *ETCodeEditorExtension::getCodeEditor()

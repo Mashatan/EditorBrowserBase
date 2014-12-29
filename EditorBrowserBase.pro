@@ -9,11 +9,14 @@ DESTDIR = bin
 
 
 QT += widgets
-QT += quick
-QT += webkit
-QT += webkitwidgets
 QT += qml
+QT += quick
+QT += quick-private
+QT += webkit
+QT += webkit-private
+QT += webkitwidgets
 
+CONFIG += qml_debug
 CONFIG += qt
 CONFIG += warn_on
 CONFIG += console

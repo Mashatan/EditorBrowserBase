@@ -10,12 +10,14 @@
 #include <QTimer>
 
 
-ETCodeEditorHandler::ETCodeEditorHandler(QObject *obj)
+ETCodeEditorHandler::ETCodeEditorHandler(QQuickWebView * ptrwebView)
 {
-    m_ptrObject = obj;
-    bool result = QObject::connect(obj, SIGNAL(onEventHandler(const QString)),
-                     this, SLOT(doEventHandler(const QString)));
+    m_ptrWebView = ptrwebView;
+    bool result;
+    result = QObject::connect(ptrwebView->experimental(), SIGNAL(messageReceived(const QVariantMap&)),
+                   this, SLOT(doMessageReceived(const QVariantMap&)));
     Q_ASSERT(result);
+
 }
 
 void ETCodeEditorHandler::appendAnnotation(int line, int start, int end, QString text)
@@ -34,9 +36,9 @@ void ETCodeEditorHandler::clearAnnotation()
 }
 
 
-void ETCodeEditorHandler::doEventHandler(const QString message)
+void ETCodeEditorHandler::doMessageReceived(const QVariantMap& message)
 {
-    QJsonDocument jsonDoc = QJsonDocument::fromJson(message.toLatin1());
+    QJsonDocument jsonDoc = QJsonDocument::fromJson(message.value("data").toByteArray());
     QJsonObject jsonObj = jsonDoc.object();
     switch (jsonObj["type"].toInt())
     {
@@ -61,8 +63,8 @@ void ETCodeEditorHandler::doSimulationCompileTimer()
     //Making a static annotation.
     {
         clearAnnotation();
-        appendAnnotation(2, 9, 19, "function unknown.");
-        appendAnnotation(4, 4, 12, "variable unknown.");
+        appendAnnotation(2, 9, 19, "function <span style=\"color:blue;\">myFunction</span> unknown.");
+        appendAnnotation(4, 4, 12, "variable <span style=\"color:blue;\">document</span> unknown.");
     }
 
     //Preparing json data from annotation list.
@@ -87,9 +89,5 @@ void ETCodeEditorHandler::doSimulationCompileTimer()
 
 void ETCodeEditorHandler::updateAnnotation(QString message)
 {
-    QVariant returnedValue;
-    QVariant msg = message;
-    QMetaObject::invokeMethod(m_ptrObject, "updateAnnotation",
-            Q_RETURN_ARG(QVariant, returnedValue),
-                              Q_ARG(QVariant, msg));
+    m_ptrWebView->experimental()->postMessage(message);
 }

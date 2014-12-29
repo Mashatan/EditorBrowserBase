@@ -5,6 +5,7 @@
 #pragma once
 #include <QDebug>
 #include <QObject>
+#include <private/qquickwebview_p.h>
 
 class ETCodeEditorHandler:public QObject
 {
@@ -17,12 +18,12 @@ public:
         int end;
         QString text;
     };
-    ETCodeEditorHandler(QObject* obj);
+    ETCodeEditorHandler(QQuickWebView* ptrWebView);
     void appendAnnotation(int line, int start, int end, QString text);
     void clearAnnotation();
 
 public slots:
-    void doEventHandler(const QString message);
+    void doMessageReceived(const QVariantMap&);
 
 private slots:
     void doSimulationCompileTimer();
@@ -35,6 +36,6 @@ private:
         ehChange=100,
     };
 
-    QObject *m_ptrObject;
+    QQuickWebView *m_ptrWebView;
     void updateAnnotation(QString message);
 };
